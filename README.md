@@ -96,6 +96,9 @@ sudo systemctl start ympd
 ## Rebuild
 
 ```
+sudo apt update
+sudo apt install libmpdclient-dev
+
 cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_FLAGS="-fcommon"
 sudo make install
 sudo systemctl restart ympd

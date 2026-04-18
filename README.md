@@ -79,7 +79,7 @@ After=network.target mpd.service
 # -w 8080 (Web interface port)
 ExecStart=/usr/bin/ympd -h localhost -p 6600 -w 8080
 Restart=always
-User=victor
+User=pi
 
 [Install]
 WantedBy=multi-user.target

@@ -1381,12 +1381,22 @@ function add_filter() {
 }
 
 $(document).ready(function () {
-  $("#radio_search_form").submit(function (e) {
-    e.preventDefault();
+  function performRadioSearch() {
     var query = $("#radio_search_input").val();
     if (query.trim().length > 0) {
       app.setLocation("#/radio/");
       radio_load_stations(query);
+    }
+  }
+
+  $("#radio_search_btn").click(function () {
+    performRadioSearch();
+  });
+
+  $("#radio_search_input").keypress(function (e) {
+    if (e.which == 13) {
+      e.preventDefault();
+      performRadioSearch();
     }
   });
 });

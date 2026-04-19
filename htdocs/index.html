@@ -7,315 +7,407 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="ympd - fast and lightweight MPD webclient">
   <meta name="author" content="andy@ndyk.de">
-
   <title>ympd</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.css" rel="stylesheet">
-  <link href="css/bootstrap-theme.css" rel="stylesheet">
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Bootstrap 3 CSS via CDN (needed for modals/slider base) -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Custom styles for this template -->
+  <!-- Custom Apple Music theme (overrides Bootstrap) -->
   <link href="css/mpd.css" rel="stylesheet">
   <link href="assets/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">
   <script src="js/modernizr-custom.js"></script>
 </head>
 
-<body>
+<body class="am-body">
 
-  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"
-          aria-expanded="false" aria-label="Toggle navigation">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-play-circle"></span> ympd</a>
+  <!-- ═══════════════════════════════════════════════
+       LEFT SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="am-sidebar" id="am-sidebar">
+    <!-- Logo -->
+    <div class="am-logo">
+      <span class="am-logo-icon"><i class="fa-solid fa-music"></i></span>
+      <span class="am-logo-text">ympd</span>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="am-nav" id="nav_links">
+      <a href="#/" class="am-nav-item active" id="am-nav-queue" data-section="queue">
+        <i class="fa-solid fa-list-music"></i>
+        <span>Queue</span>
+      </a>
+      <a href="#/browse/0/" class="am-nav-item" id="am-nav-browse" data-section="browse">
+        <i class="fa-solid fa-folder-open"></i>
+        <span>Browse Library</span>
+      </a>
+      <a href="#/radio/" class="am-nav-item" id="am-nav-radio" data-section="radio">
+        <i class="fa-solid fa-radio"></i>
+        <span>Web Radio</span>
+      </a>
+      <a href="#/dirble/" class="am-nav-item" id="am-nav-dirble" data-section="dirble">
+        <i class="fa-solid fa-broadcast-tower"></i>
+        <span>Dirble</span>
+      </a>
+    </nav>
+
+    <!-- Divider -->
+    <div class="am-sidebar-divider"></div>
+
+    <!-- Search -->
+    <form id="search" class="am-sidebar-search" role="search">
+      <div class="am-search-wrap">
+        <i class="fa-solid fa-magnifying-glass am-search-icon"></i>
+        <label for="search-input" class="sr-only">Search</label>
+        <input id="search-input" type="text" class="am-search-input" placeholder="Search library…">
       </div>
-      <div class="collapse navbar-collapse">
+    </form>
 
-        <ul id="nav_links" class="nav navbar-nav">
-          <li id="queue"><a href="#/">Queue</a></li>
-          <li id="browse"><a href="#/browse/0/">Browse Database</a></li>
-          <li id="radio"><a href="#/radio/">Web Radio</a></li>
-          <li id="dirble"><a href="#/dirble/">Dirble</a></li>
-          <li><a href="#" data-toggle="modal" data-target="#addstream">Add Stream</a></li>
-          <li><a href="#" data-toggle="modal" data-target="#settings" onclick="getHost();">Settings</a></li>
-        </ul>
+    <!-- Divider -->
+    <div class="am-sidebar-divider"></div>
 
+    <!-- Playback Settings -->
+    <details name="settings" class="am-settings-section">
+      <summary class="am-settings-toggle">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Playback Options</span>
+        <i class="fa-solid fa-chevron-down am-chevron"></i>
+      </summary>
 
-        <form id="search" class="navbar-form navbar-right" role="search">
-          <div class="form-group">
-            <label for="search-input" class="sr-only">Search</label>
-            <input id="search-input" type="text" class="form-control" placeholder="Search">
-          </div>
-        </form>
-      </div><!--/.nav-collapse -->
-    </div>
-  </div>
-
-  <div class="container starter-template">
-    <div class="row">
-
-      <div class="col-xs-12">
-        <div class="notifications top-right"></div>
-
-        <div class="panel panel-primary">
-          <!-- Default panel contents -->
-          <div class="panel-heading"><b id="panel-heading">Queue</b></div>
-          <div class="panel-body">
-            <div class="text-center" style="margin-bottom: 20px; margin-top: 10px;">
-              <div class="player-controls" role="toolbar"
-                style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-left: 0; padding: 0 10px;">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-default" onclick="socket.send('MPD_API_SET_PREV');"
-                    aria-label="Previous Track">
-                    <span class="glyphicon glyphicon-backward" aria-hidden="true"></span>
-                  </button>
-                  <button type="button" class="btn btn-default" onclick="socket.send('MPD_API_SET_STOP');"
-                    aria-label="Stop Playback">
-                    <span id="stop-icon" class="glyphicon glyphicon-stop" aria-hidden="true"></span>
-                  </button>
-                  <button type="button" class="btn btn-default" onclick="clickPlay();" aria-label="Play/Pause">
-                    <span id="play-icon" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
-                  </button>
-                  <button type="button" class="btn btn-default" onclick="socket.send('MPD_API_SET_NEXT');"
-                    aria-label="Next Track">
-                    <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
-                  </button>
-                </div>
-                <div class="btn-group">
-                  <button id="btnlove" type="button" class="btn btn-default" onclick="clickLove();"
-                    aria-label="Love Track">
-                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
-                  </button>
-                </div>
-                <div class="btn-group">
-                  <div class="btn btn-toolbar btn-default" aria-label="Volume Control" tabindex="0">
-                    <span id="volume-icon" class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-                    <div id="volumeslider"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h1>
-              <span id="track-icon" onclick="clickPlay();"
-                onkeydown="if(event.key==='Enter'||event.key===' ') clickPlay();" role="button" tabindex="0"
-                class="glyphicon glyphicon-play" aria-label="Play/Pause"></span>
-              <span id="currenttrack"></span>
-            </h1>
-            <h4>
-              <span id="album" class="text"></span>
-              <span id="artist" class="text pull-right"></span>
-            </h4>
-            <p id="counter" class="text pull-right">&nbsp;&nbsp;</p>
-
-            <div id="progressbar"></div>
-
-
-          </div><!-- /.panel-body -->
-
-          <ol id="breadcrump" class="breadcrumb">
-          </ol>
-
-          <div class="col-md-12" id="filter">
-            <button id="add-all-songs" class="btn btn-primary pull-right">Add all</button>
-          </div>
-
-
-          <!-- Table -->
-          <div class="table-responsive">
-            <table id="salamisandwich" class="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col" colspan="2">Track</th>
-                  <th scope="col">Duration</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-
-          <div id="dirble_panel">
-            <p id="dirble_loading" style="font-size:16px;font-weight:bold;margin-left:4em;">Loading...</p>
-            <table style="float:right; width:44%; margin-right:4%;" id="dirble_right" class="table table-hover">
-              <thead>
-                <tr>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-            <table style="width:44%; margin-left:4%;" id="dirble_left" class="table table-hover">
-              <thead>
-                <tr>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-
-          <div id="radio_panel" class="hide">
-            <div class="row" style="margin-left: 0; margin-right: 0;">
-              <div class="col-md-12">
-              <div id="radio_search_form" class="form-inline" style="margin-bottom: 20px;">
-                  <div class="form-group">
-                    <input type="text" class="form-control" id="radio_search_input"
-                      placeholder="Search for stations (e.g. jazz)">
-                  </div>
-                  <button type="button" class="btn btn-default" id="radio_search_btn">Search API</button>
-                </div>
-              </div>
-              <div class="col-md-12">
-                <p id="radio_loading" class="hide" style="font-size:16px;font-weight:bold;">Loading...</p>
-                <div class="table-responsive">
-                  <table id="radio_results" class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th scope="col" style="width: 50px;">Image</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Codec</th>
-                        <th scope="col">Bitrate</th>
-                        <th scope="col">Country</th>
-                        <th scope="col">Language</th>
-                        <th scope="col">Last Checked</th>
-                        <th scope="col" style="width: 100px;"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-        </div><!-- /.panel -->
-        <ul class="pager">
-          <li id="prev" class="page-btn hide"><a href="">Previous</a></li>
-          <li id="next" class="page-btn"><a href="">Next</a></li>
-        </ul>
-      </div><!-- /.col-md-10 -->
-      <details name="settings" class="col-xs-12">
-        <summary>
-          <span class="glyphicon glyphicon-cog"></span> Settings
-        </summary>
-        <div class="btn-toolbar row">
-          <div class="btn-block btn-group-lg" data-toggle="buttons">
-            <button id="btnrandom" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-random"></span> Random
-            </button>
-            <button id="btnconsume" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-fire"></span> Consume
-            </button>
-            <button id="btnsingle" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-star"></span> Single
-            </button>
-            <button id="btncrossfade" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-link"></span> Crossfade
-            </button>
-            <button id="btnrepeat" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-repeat"></span> Repeat
-            </button>
-          </div>
-          <div id="btn-outputs-block" class="btn-block btn-group-lg">
-          </div>
-
-          <div id="trashmode" class="btn-block btn-group-lg" data-toggle="radio">
-            <button id="btntrashmodeup" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-chevron-up"></span>
-              <span class="glyphicon glyphicon-trash"></span> <span>Up</span>
-            </button>
-            <button id="btntrashmodesingle" type="button" class="btn btn-default active">
-              <span class="glyphicon glyphicon-star-empty"></span>
-              <span class="glyphicon glyphicon-trash"></span> <span>Single</span>
-            </button>
-            <button id="btntrashmodedown" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-chevron-down"></span>
-              <span class="glyphicon glyphicon-trash"></span> <span>Down</span>
-            </button>
-          </div>
-
-          <div id="btn-responsive-block" class="btn-block btn-group-lg">
-            <button type="button" class="btn btn-default" onclick="socket.send('MPD_API_RM_ALL');">
-              <span class="glyphicon glyphicon-trash"></span> Clear Queue
-            </button>
-            <a href="#" data-toggle="modal" data-target="#savequeue" class="btn btn-default">
-              <span class="glyphicon glyphicon-save"></span> Save Queue
-            </a>
-          </div>
-
+      <div class="am-settings-body">
+        <!-- Toggles -->
+        <div class="am-toggle-group">
+          <button id="btnrandom" type="button" class="am-toggle-btn" title="Random">
+            <i class="fa-solid fa-shuffle"></i> <span>Random</span>
+          </button>
+          <button id="btnconsume" type="button" class="am-toggle-btn" title="Consume">
+            <i class="fa-solid fa-fire"></i> <span>Consume</span>
+          </button>
+          <button id="btnsingle" type="button" class="am-toggle-btn" title="Single">
+            <i class="fa-solid fa-1"></i> <span>Single</span>
+          </button>
+          <button id="btncrossfade" type="button" class="am-toggle-btn" title="Crossfade">
+            <i class="fa-solid fa-arrows-rotate"></i> <span>Crossfade</span>
+          </button>
+          <button id="btnrepeat" type="button" class="am-toggle-btn" title="Repeat">
+            <i class="fa-solid fa-repeat"></i> <span>Repeat</span>
+          </button>
         </div>
-    </div>
-    </details>
-    <!-- /.col-md-2 -->
-  </div><!-- /.row -->
-  </div><!-- /.container -->
 
-  <!-- Modal -->
+        <!-- Audio Outputs -->
+        <div id="btn-outputs-block" class="am-outputs-block"></div>
+
+        <!-- Trash mode -->
+        <div id="trashmode" class="am-trashmode">
+          <button id="btntrashmodeup" type="button" class="am-trash-btn">
+            <i class="fa-solid fa-chevron-up"></i>
+            <i class="fa-solid fa-trash"></i> <span>Up</span>
+          </button>
+          <button id="btntrashmodesingle" type="button" class="am-trash-btn active">
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-solid fa-trash"></i> <span>Single</span>
+          </button>
+          <button id="btntrashmodedown" type="button" class="am-trash-btn">
+            <i class="fa-solid fa-chevron-down"></i>
+            <i class="fa-solid fa-trash"></i> <span>Down</span>
+          </button>
+        </div>
+
+        <!-- Queue Actions -->
+        <div id="btn-responsive-block" class="am-queue-actions">
+          <button type="button" class="am-action-btn" onclick="socket.send('MPD_API_RM_ALL');">
+            <i class="fa-solid fa-trash"></i> Clear Queue
+          </button>
+          <a href="#" data-toggle="modal" data-target="#savequeue" class="am-action-btn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Queue
+          </a>
+        </div>
+      </div>
+    </details>
+
+    <!-- Divider -->
+    <div class="am-sidebar-divider"></div>
+
+    <!-- Bottom sidebar actions -->
+    <div class="am-sidebar-bottom">
+      <button class="am-icon-btn" onclick="addStream();" data-toggle="modal" data-target="#addstream" title="Add Stream">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <button class="am-icon-btn" onclick="getHost();" data-toggle="modal" data-target="#settings" title="Settings">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Sidebar backdrop overlay (mobile) -->
+  <div class="am-sidebar-backdrop" id="am-sidebar-backdrop"></div>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="am-sidebar-toggle" id="am-sidebar-toggle" aria-label="Toggle sidebar">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════ -->
+  <main class="am-main">
+
+    <!-- Notifications -->
+    <div class="notifications top-right"></div>
+
+    <!-- ──────────────────────────────────────────
+         NOW PLAYING HERO
+    ────────────────────────────────────────── -->
+    <section class="am-nowplaying-hero" id="am-nowplaying" style="display:flex !important">
+      <!-- Artwork / Disc -->
+      <div class="am-artwork-wrap">
+        <div class="am-artwork-disc" id="am-artwork-disc">
+          <div class="am-disc-inner">
+            <i class="fa-solid fa-music am-disc-icon"></i>
+          </div>
+        </div>
+        <!-- Blurred ambient glow -->
+        <div class="am-artwork-glow"></div>
+      </div>
+
+      <!-- Track Info -->
+      <div class="am-track-info">
+        <div class="am-track-label" id="panel-heading">Queue</div>
+        <div class="am-track-title" id="am-track-title-display">
+          <!-- play icon (hidden, kept for mpd.js) -->
+          <span id="track-icon" onclick="clickPlay();"
+            onkeydown="if(event.key==='Enter'||event.key===' ') clickPlay();"
+            role="button" tabindex="0"
+            class="glyphicon glyphicon-play am-track-play-icon" aria-label="Play/Pause"></span>
+          <span id="currenttrack" class="am-current-track-text"></span>
+        </div>
+        <div class="am-track-meta">
+          <span id="artist" class="am-artist"></span>
+          <span class="am-meta-dot" id="am-meta-dot">·</span>
+          <span id="album" class="am-album"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         CONTENT PANEL
+    ────────────────────────────────────────── -->
+    <section class="am-content-panel">
+
+      <!-- Breadcrumb -->
+      <ol id="breadcrump" class="am-breadcrumb breadcrumb hide"></ol>
+
+      <!-- Filter bar -->
+      <div class="col-md-12" id="filter" class="am-filter-bar">
+        <button id="add-all-songs" class="am-add-all-btn">
+          <i class="fa-solid fa-plus"></i> Add all
+        </button>
+      </div>
+
+      <!-- Queue / Browse / Search Table -->
+      <div class="table-responsive am-table-wrap">
+        <table id="salamisandwich" class="table table-hover am-table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col" colspan="2">Track</th>
+              <th scope="col">Duration</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Dirble Panel -->
+      <div id="dirble_panel" class="hide">
+        <p id="dirble_loading" style="font-size:16px;font-weight:bold;margin-left:4em;">Loading...</p>
+        <table style="float:right; width:44%; margin-right:4%;" id="dirble_right" class="table table-hover am-table">
+          <thead><tr><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <table style="width:44%; margin-left:4%;" id="dirble_left" class="table table-hover am-table">
+          <thead><tr><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Web Radio Panel -->
+      <div id="radio_panel" class="hide">
+        <div class="row" style="margin-left: 0; margin-right: 0;">
+          <div class="col-md-12">
+            <div id="radio_search_form" class="am-radio-search-form">
+              <div class="am-search-wrap am-radio-search-wrap">
+                <i class="fa-solid fa-magnifying-glass am-search-icon"></i>
+                <input type="text" class="am-search-input" id="radio_search_input"
+                  placeholder="Search stations… (e.g. jazz, lofi, classical)">
+              </div>
+              <button type="button" class="am-search-btn" id="radio_search_btn">
+                <i class="fa-solid fa-satellite-dish"></i> Search
+              </button>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <p id="radio_loading" class="hide am-loading-text">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading stations…
+            </p>
+            <div class="table-responsive am-table-wrap">
+              <table id="radio_results" class="table table-hover am-table am-radio-table">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 50px;">Logo</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Codec</th>
+                    <th scope="col">Bitrate</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Language</th>
+                    <th scope="col">Last Checked</th>
+                    <th scope="col" style="width: 100px;"></th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section><!-- /.am-content-panel -->
+
+    <!-- Pager -->
+    <ul class="pager am-pager">
+      <li id="prev" class="page-btn hide"><a href=""><i class="fa-solid fa-chevron-left"></i> Previous</a></li>
+      <li id="next" class="page-btn"><a href="">Next <i class="fa-solid fa-chevron-right"></i></a></li>
+    </ul>
+
+  </main><!-- /.am-main -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       BOTTOM PLAYER BAR  (persistent NOW PLAYING)
+  ═══════════════════════════════════════════════ -->
+  <footer class="am-player-bar" id="am-player-bar">
+
+    <!-- Row 1: track info + transport controls -->
+    <div class="am-player-bar-row1">
+
+      <!-- Left: mini track info -->
+      <div class="am-bar-left">
+        <div class="am-bar-art" id="am-bar-art">
+          <i class="fa-solid fa-music"></i>
+        </div>
+        <div class="am-bar-track">
+          <span class="am-bar-title" id="am-bar-title">Not Playing</span>
+          <span class="am-bar-artist" id="am-bar-artist"></span>
+        </div>
+        <!-- Love button -->
+        <button id="btnlove" type="button" class="am-bar-love" onclick="clickLove();" aria-label="Love Track" title="Love">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+      </div>
+
+      <!-- Center: transport controls -->
+      <div class="am-bar-center">
+        <div class="am-transport">
+          <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_PREV');" aria-label="Previous" title="Previous">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button type="button" class="am-ctrl-btn am-ctrl-stop" onclick="socket.send('MPD_API_SET_STOP');" aria-label="Stop" title="Stop">
+            <span id="stop-icon" class="glyphicon glyphicon-stop" aria-hidden="true" style="display:none"></span>
+            <i class="fa-solid fa-stop"></i>
+          </button>
+          <button type="button" class="am-ctrl-btn am-ctrl-play" onclick="clickPlay();" aria-label="Play/Pause" title="Play / Pause">
+            <span id="play-icon" class="glyphicon glyphicon-pause" aria-hidden="true" style="display:none"></span>
+            <i class="fa-solid fa-play am-fa-play-icon" id="am-fa-play-icon"></i>
+          </button>
+          <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_NEXT');" aria-label="Next" title="Next">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: volume (desktop only) -->
+      <div class="am-bar-right">
+        <span id="volume-icon" class="am-volume-icon glyphicon glyphicon-volume-up" aria-hidden="true" style="display:none"></span>
+        <i class="fa-solid fa-volume-high am-fa-volume" id="am-fa-volume"></i>
+        <div id="volumeslider" class="am-volumeslider-host"></div>
+      </div>
+
+    </div><!-- /.am-player-bar-row1 -->
+
+    <!-- Row 2: scrubber + time counter (full width) -->
+    <div class="am-scrubber-row">
+      <span id="counter" class="am-counter">0:00 / 0:00</span>
+      <div id="progressbar" class="am-progressbar-host"></div>
+    </div>
+
+  </footer><!-- /.am-player-bar -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       MODALS (unchanged logic, dark-themed via CSS)
+  ═══════════════════════════════════════════════ -->
+
+  <!-- Settings Modal -->
   <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="settingsLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h2 class="modal-title" id="settingsLabel"><span class="glyphicon glyphicon-wrench"></span> Settings</h2>
+      <div class="modal-content am-modal-content">
+        <div class="modal-header am-modal-header">
+          <button type="button" class="close am-modal-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title am-modal-title" id="settingsLabel">
+            <i class="fa-solid fa-wrench"></i> Settings
+          </h2>
         </div>
-        <div class="modal-body">
-          <h4><a href="http://www.ympd.org"><span class="glyphicon glyphicon-play-circle"></span>
-              ympd</a>&nbsp;&nbsp;&nbsp;<small>MPD Web GUI - written in C, utilizing Websockets and Bootstrap/JS</small>
+        <div class="modal-body am-modal-body">
+          <h4>
+            <a href="http://www.ympd.org"><i class="fa-solid fa-play-circle"></i> ympd</a>
+            &nbsp;&nbsp;&nbsp;<small>MPD Web GUI — written in C, utilizing Websockets and Bootstrap/JS</small>
           </h4>
-          <p>
-            ympd is a lightweight MPD (Music Player Daemon) web client that runs without a dedicated webserver or
-            interpreters like PHP, NodeJS or Ruby. It's tuned for minimal resource usage and requires only very litte
-            dependencies.</p>
+          <p>ympd is a lightweight MPD (Music Player Daemon) web client that runs without a dedicated webserver or
+            interpreters like PHP, NodeJS or Ruby. It's tuned for minimal resource usage.</p>
           <h5>ympd uses following excellent software:</h5>
           <h6><a href="http://cesanta.com/docs.html">Mongoose</a> <small>GPLv2</small></h6>
           <h6><a href="http://www.musicpd.org/libs/libmpdclient/">libMPDClient</a> <small>BSD License</small></h6>
-          <hr />
+          <hr>
           <div class="row">
             <div class="form-group col-md-6">
-              <button type="button" class="btn btn-default btn-block" onclick="updateDB();">
-                <span class="glyphicon glyphicon-refresh"></span> Update Database
+              <button type="button" class="btn btn-default btn-block am-modal-btn" onclick="updateDB();">
+                <i class="fa-solid fa-rotate"></i> Update Database
               </button>
             </div>
             <div class="form-group col-md-6" data-toggle="buttons">
-              <button type="button" class="btn btn-default btn-block" id="btnnotify">
-                <span class="glyphicon glyphicon-comment"></span> Enable Notifications
+              <button type="button" class="btn btn-default btn-block am-modal-btn" id="btnnotify">
+                <i class="fa-solid fa-bell"></i> Enable Notifications
               </button>
             </div>
           </div>
-          <hr />
+          <hr>
           <form role="form">
             <div class="row">
               <div class="form-group col-md-9">
                 <label class="control-label" for="mpdhost">MPD Host/IP</label>
-                <input type="text" class="form-control" id="mpdhost" />
+                <input type="text" class="form-control am-form-control" id="mpdhost">
               </div>
               <div class="form-group col-md-3">
                 <label class="control-label" for="mpdport">MPD Port</label>
-                <input type="text" class="form-control" id="mpdport" />
+                <input type="text" class="form-control am-form-control" id="mpdport">
               </div>
             </div>
             <div class="row">
               <div class="form-group col-md-6">
                 <label class="control-label" for="mpd_pw">MPD Password</label>
-                <input type="password" class="form-control" id="mpd_pw" placeholder="Password" />
+                <input type="password" class="form-control am-form-control" id="mpd_pw" placeholder="Password">
               </div>
               <div class="form-group col-md-6">
                 <label class="control-label" for="mpd_pw_con">MPD Password (Confirmation)</label>
-                <input type="password" class="form-control" id="mpd_pw_con" placeholder="Confirmation"
+                <input type="password" class="form-control am-form-control" id="mpd_pw_con" placeholder="Confirmation"
                   data-placement="right" data-toggle="popover" data-content="Password does not match!"
-                  data-trigger="manual" />
+                  data-trigger="manual">
               </div>
               <div class="form-group col-md-12">
                 <div id="mpd_password_set" class="hide alert alert-info">
@@ -326,82 +418,84 @@
             </div>
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-default" onclick="confirmSettings();">Save</button>
+        <div class="modal-footer am-modal-footer">
+          <button type="button" class="btn am-modal-btn-cancel" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn am-modal-btn-primary" onclick="confirmSettings();">Save</button>
         </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+      </div>
+    </div>
+  </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="addstream" tabindex="-1" role="dialog" aria-labelledby="addstreamLabel"
-    aria-hidden="true">
+  <!-- Add Stream Modal -->
+  <div class="modal fade" id="addstream" tabindex="-1" role="dialog" aria-labelledby="addstreamLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h2 class="modal-title" id="addstreamLabel"><span class="glyphicon glyphicon-wrench"></span> Add Stream</h2>
+      <div class="modal-content am-modal-content">
+        <div class="modal-header am-modal-header">
+          <button type="button" class="close am-modal-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title am-modal-title" id="addstreamLabel">
+            <i class="fa-solid fa-plus"></i> Add Stream
+          </h2>
         </div>
-        <div class="modal-body">
+        <div class="modal-body am-modal-body">
           <form role="form">
             <div class="row">
               <div class="form-group col-md-12">
                 <label class="control-label" for="streamurl">Stream URL</label>
-                <input type="text" class="form-control" id="streamurl" />
+                <input type="text" class="form-control am-form-control" id="streamurl">
               </div>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-default" onclick="addStream();">Add Stream</button>
+        <div class="modal-footer am-modal-footer">
+          <button type="button" class="btn am-modal-btn-cancel" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn am-modal-btn-primary" onclick="addStream();">Add Stream</button>
         </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+      </div>
+    </div>
+  </div>
 
-  <div class="modal fade" id="savequeue" tabindex="-1" role="dialog" aria-labelledby="savequeueLabel"
-    aria-hidden="true">
+  <!-- Save Queue Modal -->
+  <div class="modal fade" id="savequeue" tabindex="-1" role="dialog" aria-labelledby="savequeueLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
-          <h2 class="modal-title" id="savequeueLabel"><span class="glyphicon glyphicon-wrench"></span> Save Queue</h2>
+      <div class="modal-content am-modal-content">
+        <div class="modal-header am-modal-header">
+          <button type="button" class="close am-modal-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h2 class="modal-title am-modal-title" id="savequeueLabel">
+            <i class="fa-solid fa-floppy-disk"></i> Save Queue
+          </h2>
         </div>
-        <div class="modal-body">
+        <div class="modal-body am-modal-body">
           <form role="form">
             <div class="row">
               <div class="form-group col-md-9">
                 <label class="control-label" for="playlistname">Playlist Name</label>
-                <input type="text" class="form-control" id="playlistname" />
+                <input type="text" class="form-control am-form-control" id="playlistname">
               </div>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-default" onclick="saveQueue();">Save Queue</button>
+        <div class="modal-footer am-modal-footer">
+          <button type="button" class="btn am-modal-btn-cancel" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn am-modal-btn-primary" onclick="saveQueue();">Save Queue</button>
         </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+      </div>
+    </div>
+  </div>
 
-  <div class="modal fade bs-example-modal-sm" id="wait" tabindex="-1" role="dialog" data-backdrop="static"
-    data-keyboard="false" aria-hidden="true">
+  <!-- Searching... Modal -->
+  <div class="modal fade" id="wait" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1>Searching...</h1>
+      <div class="modal-content am-modal-content">
+        <div class="modal-header am-modal-header">
+          <h2><i class="fa-solid fa-magnifying-glass"></i> Searching…</h2>
         </div>
-        <div class="modal-body">
-          <div class="progress progress-striped active">
-            <div class="progress-bar" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"
-              style="width: 100%">
-              <span class="sr-only">Please Wait</span>
-            </div>
+        <div class="modal-body am-modal-body">
+          <div class="am-progress-indeterminate">
+            <div class="am-progress-bar-inner"></div>
           </div>
         </div>
       </div>
@@ -409,9 +503,9 @@
   </div>
 
 
-  <!-- Bootstrap core JavaScript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
+  <!-- ═══════════════════════════════════════════════
+       SCRIPTS (same order as before, local files)
+  ═══════════════════════════════════════════════ -->
   <script src="js/jquery-1.10.2.min.js"></script>
   <script src="js/jquery.cookie.js"></script>
   <script src="js/bootstrap.min.js"></script>
@@ -420,6 +514,150 @@
   <script src="js/sammy.js"></script>
   <script src="js/jquery-ui-sortable.min.js"></script>
   <script src="js/mpd.js"></script>
+
+  <!-- Apple Music UI bridge script -->
+  <script>
+    // ── Sidebar open/close helpers ─────────────────────────
+    function openSidebar() {
+      document.getElementById('am-sidebar').classList.add('am-sidebar-open');
+      document.getElementById('am-sidebar-backdrop').classList.add('active');
+      document.body.style.overflow = 'hidden'; // prevent background scroll
+    }
+
+    function closeSidebar() {
+      document.getElementById('am-sidebar').classList.remove('am-sidebar-open');
+      document.getElementById('am-sidebar-backdrop').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // ── Sidebar mobile toggle ──────────────────────────────
+    document.getElementById('am-sidebar-toggle').addEventListener('click', function() {
+      var sidebar = document.getElementById('am-sidebar');
+      if (sidebar.classList.contains('am-sidebar-open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    // Close sidebar on backdrop click
+    document.getElementById('am-sidebar-backdrop').addEventListener('click', closeSidebar);
+
+    // Close sidebar when a nav item is clicked (mobile UX)
+    document.querySelectorAll('.am-nav-item').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 900) closeSidebar();
+      });
+    });
+
+    // ── Touch swipe-left to close sidebar ─────────────────
+    (function() {
+      var startX = 0;
+      var sidebar = document.getElementById('am-sidebar');
+      sidebar.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+      }, { passive: true });
+      sidebar.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].clientX - startX;
+        if (dx < -60) closeSidebar(); // swipe left > 60px closes
+      }, { passive: true });
+    })();
+
+    // ── Sync nav active state with mpd.js section changes ─
+    (function() {
+      var sectionMap = {
+        'queue':  'am-nav-queue',
+        'browse': 'am-nav-browse',
+        'radio':  'am-nav-radio',
+        'dirble': 'am-nav-dirble'
+      };
+
+      function syncNav() {
+        Object.keys(sectionMap).forEach(function(section) {
+          var newEl = document.getElementById(sectionMap[section]);
+          if (!newEl) return;
+          if (typeof current_app !== 'undefined' && current_app === section) {
+            newEl.classList.add('active');
+          } else {
+            newEl.classList.remove('active');
+          }
+        });
+      }
+      setInterval(syncNav, 400);
+    })();
+
+    // ── Mirror play state to FA icon + disc spin ──────────
+    function syncPlayIcon() {
+      var hidden = document.getElementById('play-icon');
+      var faIcon = document.getElementById('am-fa-play-icon');
+      var disc   = document.getElementById('am-artwork-disc');
+      var barArt = document.getElementById('am-bar-art');
+      if (!hidden || !faIcon) return;
+
+      var isPlaying = hidden.classList.contains('glyphicon-pause');
+      if (isPlaying) {
+        faIcon.className = 'fa-solid fa-pause am-fa-play-icon';
+        disc && disc.classList.add('am-disc-spinning');
+        barArt && barArt.classList.add('am-bar-art-spin');
+      } else {
+        faIcon.className = 'fa-solid fa-play am-fa-play-icon';
+        disc && disc.classList.remove('am-disc-spinning');
+        barArt && barArt.classList.remove('am-bar-art-spin');
+      }
+    }
+    setInterval(syncPlayIcon, 300);
+
+    // ── Mirror volume icon to FA icon ─────────────────────
+    function syncVolumeIcon() {
+      var hidden = document.getElementById('volume-icon');
+      var faIcon = document.getElementById('am-fa-volume');
+      if (!hidden || !faIcon) return;
+
+      if (hidden.classList.contains('glyphicon-volume-off')) {
+        faIcon.className = 'fa-solid fa-volume-xmark am-fa-volume';
+      } else if (hidden.classList.contains('glyphicon-volume-down')) {
+        faIcon.className = 'fa-solid fa-volume-low am-fa-volume';
+      } else {
+        faIcon.className = 'fa-solid fa-volume-high am-fa-volume';
+      }
+    }
+    setInterval(syncVolumeIcon, 500);
+
+    // ── Mirror track info to bottom bar ───────────────────
+    function syncBarTrackInfo() {
+      var title  = document.getElementById('currenttrack');
+      var artist = document.getElementById('artist');
+      var barTitle  = document.getElementById('am-bar-title');
+      var barArtist = document.getElementById('am-bar-artist');
+      if (!title || !barTitle) return;
+
+      var t = (title.textContent || '').trim();
+      barTitle.textContent  = t || 'Not Playing';
+      barArtist.textContent = (artist ? artist.textContent : '') || '';
+    }
+    setInterval(syncBarTrackInfo, 400);
+
+    // ── Show/hide meta dot ─────────────────────────────────
+    function syncMetaDot() {
+      var artist = document.getElementById('artist');
+      var album  = document.getElementById('album');
+      var dot    = document.getElementById('am-meta-dot');
+      if (!dot) return;
+      dot.style.display = (artist && artist.textContent && album && album.textContent) ? '' : 'none';
+    }
+    setInterval(syncMetaDot, 500);
+
+    // ── mpd.js still references old Bootstrap nav IDs ─────
+    $(document).ready(function() {
+      var shimNav = $('<ul id="nav_shim" style="display:none"></ul>');
+      shimNav.append('<li id="queue"><a href="#/">Queue</a></li>');
+      shimNav.append('<li id="browse"><a href="#/browse/0/">Browse Database</a></li>');
+      shimNav.append('<li id="radio"><a href="#/radio/">Web Radio</a></li>');
+      shimNav.append('<li id="dirble"><a href="#/dirble/">Dirble</a></li>');
+      $('body').append(shimNav);
+    });
+  </script>
+
 </body>
 
 </html>

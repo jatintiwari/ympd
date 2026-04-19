@@ -86,12 +86,17 @@ WantedBy=multi-user.target
 ```
 
 ```
+sudo systemctl enable mpd
+sudo systemctl start mpd
 
 sudo systemctl daemon-reload
+
 sudo systemctl enable ympd
 sudo systemctl start ympd
 
 ```
+
+To make sure everything is set correctly for your next reboot, run: `systemctl is-enabled mpd`
 
 ## Rebuild
 

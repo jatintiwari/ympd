@@ -717,8 +717,9 @@ function webSocketConnect() {
 
           $("#btnlove").removeClass("active");
 
-          $("#currenttrack").text(" " + obj.data.title);
-          var notification = "<strong><h4>" + obj.data.title + "</h4></strong>";
+          var displayTitle = obj.data.title || obj.data.name || obj.data.file || "Unknown Track";
+          $("#currenttrack").text(" " + displayTitle);
+          var notification = "<strong><h4>" + displayTitle + "</h4></strong>";
 
           if (obj.data.album) {
             $("#album").text(obj.data.album);
@@ -730,7 +731,7 @@ function webSocketConnect() {
           }
 
           if ($.cookie("notification") === "true")
-            songNotify(obj.data.title, obj.data.artist, obj.data.album);
+            songNotify(displayTitle, obj.data.artist, obj.data.album);
           else
             $(".top-right")
               .notify({
@@ -738,6 +739,15 @@ function webSocketConnect() {
                 type: "info",
               })
               .show();
+
+          // Highlight active radio station
+          var playingUrl = obj.data.file || "";
+          if (playingUrl) {
+            $("#radio_results > tbody > tr").removeClass("active-radio");
+            $("#radio_results > tbody > tr").filter(function() {
+               return $(this).attr("data-url") === playingUrl;
+            }).addClass("active-radio");
+          }
 
           break;
         case "mpdhost":
@@ -1408,7 +1418,7 @@ function render_radio_station(station) {
       '" onerror="this.style.display=\'none\'" style="width: 32px; height: 32px; object-fit: contain;">'
     : '<span class="glyphicon glyphicon-music" style="font-size: 24px;"></span>';
 
-  var tr = $('<tr style="cursor: pointer;"></tr>');
+  var tr = $('<tr style="cursor: pointer;" data-url="' + station.url_resolved + '"></tr>');
 
   tr.append("<td>" + imgHtml + "</td>");
   tr.append("<td><strong>" + (station.name || "Unknown") + "</strong>" + (station.has_extended_info ? ' <span class="glyphicon glyphicon-ok" style="color: #4CAF50; font-size: 12px; margin-left: 4px;" title="Has Extended Info"></span>' : "") + "</td>");

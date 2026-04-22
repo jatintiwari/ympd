@@ -133,7 +133,8 @@
 
     <!-- Bottom sidebar actions -->
     <div class="am-sidebar-bottom">
-      <button class="am-icon-btn" onclick="addStream();" data-toggle="modal" data-target="#addstream" title="Add Stream">
+      <button class="am-icon-btn" onclick="addStream();" data-toggle="modal" data-target="#addstream"
+        title="Add Stream">
         <i class="fa-solid fa-plus"></i>
       </button>
       <button class="am-icon-btn" onclick="getHost();" data-toggle="modal" data-target="#settings" title="Settings">
@@ -178,10 +179,9 @@
         <div class="am-track-label" id="panel-heading">Queue</div>
         <div class="am-track-title" id="am-track-title-display">
           <!-- play icon (hidden, kept for mpd.js) -->
-          <span id="track-icon" onclick="clickPlay();"
-            onkeydown="if(event.key==='Enter'||event.key===' ') clickPlay();"
-            role="button" tabindex="0"
-            class="glyphicon glyphicon-play am-track-play-icon" aria-label="Play/Pause"></span>
+          <span id="track-icon" onclick="clickPlay();" onkeydown="if(event.key==='Enter'||event.key===' ') clickPlay();"
+            role="button" tabindex="0" class="glyphicon glyphicon-play am-track-play-icon"
+            aria-label="Play/Pause"></span>
           <span id="currenttrack" class="am-current-track-text"></span>
         </div>
         <div class="am-track-meta">
@@ -226,52 +226,54 @@
       <div id="dirble_panel" class="hide">
         <p id="dirble_loading" style="font-size:16px;font-weight:bold;margin-left:4em;">Loading...</p>
         <table style="float:right; width:44%; margin-right:4%;" id="dirble_right" class="table table-hover am-table">
-          <thead><tr><th></th></tr></thead>
+          <thead>
+            <tr>
+              <th></th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
         <table style="width:44%; margin-left:4%;" id="dirble_left" class="table table-hover am-table">
-          <thead><tr><th></th></tr></thead>
+          <thead>
+            <tr>
+              <th></th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
 
       <!-- Web Radio Panel -->
-      <div id="radio_panel" class="hide">
-        <div class="row" style="margin-left: 0; margin-right: 0;">
-          <div class="col-md-12">
-            <div id="radio_search_form" class="am-radio-search-form">
-              <div class="am-search-wrap am-radio-search-wrap">
-                <i class="fa-solid fa-magnifying-glass am-search-icon"></i>
-                <input type="text" class="am-search-input" id="radio_search_input"
-                  placeholder="Search stations… (e.g. jazz, lofi, classical)">
-              </div>
-              <button type="button" class="am-search-btn" id="radio_search_btn">
-                <i class="fa-solid fa-satellite-dish"></i> Search
-              </button>
-            </div>
+      <div id="radio_panel" class="hide am-radio-panel">
+        <div id="radio_search_form" class="am-radio-search-form">
+          <div class="am-search-wrap am-radio-search-wrap">
+            <i class="fa-solid fa-magnifying-glass am-search-icon"></i>
+            <input type="text" class="am-search-input" id="radio_search_input"
+              placeholder="Search stations… (e.g. jazz, lofi, classical)">
           </div>
-          <div class="col-md-12">
-            <p id="radio_loading" class="hide am-loading-text">
-              <i class="fa-solid fa-spinner fa-spin"></i> Loading stations…
-            </p>
-            <div class="table-responsive am-table-wrap">
-              <table id="radio_results" class="table table-hover am-table am-radio-table">
-                <thead>
-                  <tr>
-                    <th scope="col" style="width: 50px;">Logo</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Codec</th>
-                    <th scope="col">Bitrate</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">Language</th>
-                    <th scope="col">Last Checked</th>
-                    <th scope="col" style="width: 100px;"></th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
+          <button type="button" class="am-search-btn" id="radio_search_btn">
+            <i class="fa-solid fa-satellite-dish"></i> Search
+          </button>
+        </div>
+        <p id="radio_loading" class="hide am-loading-text">
+          <i class="fa-solid fa-spinner fa-spin"></i> Loading stations…
+        </p>
+        <div class="am-radio-table-wrap">
+          <table id="radio_results" class="table table-hover am-table am-radio-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 50px;">Logo</th>
+                <th scope="col">Name</th>
+                <th scope="col">Codec</th>
+                <th scope="col">Bitrate</th>
+                <th scope="col">Country</th>
+                <th scope="col">Language</th>
+                <th scope="col">Last Checked</th>
+                <th scope="col" style="width: 100px;"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
 
@@ -296,15 +298,16 @@
 
       <!-- Left: mini track info -->
       <div class="am-bar-left">
-        <div class="am-bar-art" id="am-bar-art">
+        <!-- <div class="am-bar-art" id="am-bar-art">
           <i class="fa-solid fa-music"></i>
-        </div>
+        </div> -->
         <div class="am-bar-track">
           <span class="am-bar-title" id="am-bar-title">Not Playing</span>
           <span class="am-bar-artist" id="am-bar-artist"></span>
         </div>
         <!-- Love button -->
-        <button id="btnlove" type="button" class="am-bar-love" onclick="clickLove();" aria-label="Love Track" title="Love">
+        <button id="btnlove" type="button" class="am-bar-love" onclick="clickLove();" aria-label="Love Track"
+          title="Love">
           <i class="fa-solid fa-heart"></i>
         </button>
       </div>
@@ -312,26 +315,29 @@
       <!-- Center: transport controls -->
       <div class="am-bar-center">
         <div class="am-transport">
-          <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_PREV');" aria-label="Previous" title="Previous">
+          <!-- <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_PREV');" aria-label="Previous" title="Previous">
             <i class="fa-solid fa-backward-step"></i>
-          </button>
-          <button type="button" class="am-ctrl-btn am-ctrl-stop" onclick="socket.send('MPD_API_SET_STOP');" aria-label="Stop" title="Stop">
+          </button> -->
+          <button type="button" class="am-ctrl-btn am-ctrl-stop" onclick="socket.send('MPD_API_SET_STOP');"
+            aria-label="Stop" title="Stop">
             <span id="stop-icon" class="glyphicon glyphicon-stop" aria-hidden="true" style="display:none"></span>
             <i class="fa-solid fa-stop"></i>
           </button>
-          <button type="button" class="am-ctrl-btn am-ctrl-play" onclick="clickPlay();" aria-label="Play/Pause" title="Play / Pause">
+          <button type="button" class="am-ctrl-btn am-ctrl-play" onclick="clickPlay();" aria-label="Play/Pause"
+            title="Play / Pause">
             <span id="play-icon" class="glyphicon glyphicon-pause" aria-hidden="true" style="display:none"></span>
             <i class="fa-solid fa-play am-fa-play-icon" id="am-fa-play-icon"></i>
           </button>
-          <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_NEXT');" aria-label="Next" title="Next">
+          <!-- <button type="button" class="am-ctrl-btn" onclick="socket.send('MPD_API_SET_NEXT');" aria-label="Next" title="Next">
             <i class="fa-solid fa-forward-step"></i>
-          </button>
+          </button> -->
         </div>
       </div>
 
       <!-- Right: volume (desktop only) -->
       <div class="am-bar-right">
-        <span id="volume-icon" class="am-volume-icon glyphicon glyphicon-volume-up" aria-hidden="true" style="display:none"></span>
+        <span id="volume-icon" class="am-volume-icon glyphicon glyphicon-volume-up" aria-hidden="true"
+          style="display:none"></span>
         <i class="fa-solid fa-volume-high am-fa-volume" id="am-fa-volume"></i>
         <div id="volumeslider" class="am-volumeslider-host"></div>
       </div>
@@ -427,7 +433,8 @@
   </div>
 
   <!-- Add Stream Modal -->
-  <div class="modal fade" id="addstream" tabindex="-1" role="dialog" aria-labelledby="addstreamLabel" aria-hidden="true">
+  <div class="modal fade" id="addstream" tabindex="-1" role="dialog" aria-labelledby="addstreamLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content am-modal-content">
         <div class="modal-header am-modal-header">
@@ -457,7 +464,8 @@
   </div>
 
   <!-- Save Queue Modal -->
-  <div class="modal fade" id="savequeue" tabindex="-1" role="dialog" aria-labelledby="savequeueLabel" aria-hidden="true">
+  <div class="modal fade" id="savequeue" tabindex="-1" role="dialog" aria-labelledby="savequeueLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content am-modal-content">
         <div class="modal-header am-modal-header">
@@ -487,7 +495,8 @@
   </div>
 
   <!-- Searching... Modal -->
-  <div class="modal fade" id="wait" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal fade" id="wait" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content am-modal-content">
         <div class="modal-header am-modal-header">
@@ -531,7 +540,7 @@
     }
 
     // ── Sidebar mobile toggle ──────────────────────────────
-    document.getElementById('am-sidebar-toggle').addEventListener('click', function() {
+    document.getElementById('am-sidebar-toggle').addEventListener('click', function () {
       var sidebar = document.getElementById('am-sidebar');
       if (sidebar.classList.contains('am-sidebar-open')) {
         closeSidebar();
@@ -544,36 +553,36 @@
     document.getElementById('am-sidebar-backdrop').addEventListener('click', closeSidebar);
 
     // Close sidebar when a nav item is clicked (mobile UX)
-    document.querySelectorAll('.am-nav-item').forEach(function(link) {
-      link.addEventListener('click', function() {
+    document.querySelectorAll('.am-nav-item').forEach(function (link) {
+      link.addEventListener('click', function () {
         if (window.innerWidth <= 900) closeSidebar();
       });
     });
 
     // ── Touch swipe-left to close sidebar ─────────────────
-    (function() {
+    (function () {
       var startX = 0;
       var sidebar = document.getElementById('am-sidebar');
-      sidebar.addEventListener('touchstart', function(e) {
+      sidebar.addEventListener('touchstart', function (e) {
         startX = e.touches[0].clientX;
-      }, { passive: true });
-      sidebar.addEventListener('touchend', function(e) {
+      }, {passive: true});
+      sidebar.addEventListener('touchend', function (e) {
         var dx = e.changedTouches[0].clientX - startX;
         if (dx < -60) closeSidebar(); // swipe left > 60px closes
-      }, { passive: true });
+      }, {passive: true});
     })();
 
     // ── Sync nav active state with mpd.js section changes ─
-    (function() {
+    (function () {
       var sectionMap = {
-        'queue':  'am-nav-queue',
+        'queue': 'am-nav-queue',
         'browse': 'am-nav-browse',
-        'radio':  'am-nav-radio',
+        'radio': 'am-nav-radio',
         'dirble': 'am-nav-dirble'
       };
 
       function syncNav() {
-        Object.keys(sectionMap).forEach(function(section) {
+        Object.keys(sectionMap).forEach(function (section) {
           var newEl = document.getElementById(sectionMap[section]);
           if (!newEl) return;
           if (typeof current_app !== 'undefined' && current_app === section) {
@@ -590,7 +599,7 @@
     function syncPlayIcon() {
       var hidden = document.getElementById('play-icon');
       var faIcon = document.getElementById('am-fa-play-icon');
-      var disc   = document.getElementById('am-artwork-disc');
+      var disc = document.getElementById('am-artwork-disc');
       var barArt = document.getElementById('am-bar-art');
       if (!hidden || !faIcon) return;
 
@@ -625,14 +634,14 @@
 
     // ── Mirror track info to bottom bar ───────────────────
     function syncBarTrackInfo() {
-      var title  = document.getElementById('currenttrack');
+      var title = document.getElementById('currenttrack');
       var artist = document.getElementById('artist');
-      var barTitle  = document.getElementById('am-bar-title');
+      var barTitle = document.getElementById('am-bar-title');
       var barArtist = document.getElementById('am-bar-artist');
       if (!title || !barTitle) return;
 
       var t = (title.textContent || '').trim();
-      barTitle.textContent  = t || 'Not Playing';
+      barTitle.textContent = t || 'Not Playing';
       barArtist.textContent = (artist ? artist.textContent : '') || '';
     }
     setInterval(syncBarTrackInfo, 400);
@@ -640,15 +649,15 @@
     // ── Show/hide meta dot ─────────────────────────────────
     function syncMetaDot() {
       var artist = document.getElementById('artist');
-      var album  = document.getElementById('album');
-      var dot    = document.getElementById('am-meta-dot');
+      var album = document.getElementById('album');
+      var dot = document.getElementById('am-meta-dot');
       if (!dot) return;
       dot.style.display = (artist && artist.textContent && album && album.textContent) ? '' : 'none';
     }
     setInterval(syncMetaDot, 500);
 
     // ── mpd.js still references old Bootstrap nav IDs ─────
-    $(document).ready(function() {
+    $(document).ready(function () {
       var shimNav = $('<ul id="nav_shim" style="display:none"></ul>');
       shimNav.append('<li id="queue"><a href="#/">Queue</a></li>');
       shimNav.append('<li id="browse"><a href="#/browse/0/">Browse Database</a></li>');
